@@ -1,4 +1,4 @@
-//package com.budget.authservice.repository.entity;
+//package com.budget.authservice.repository.model;
 //
 //import lombok.Builder;
 //import lombok.Value;
