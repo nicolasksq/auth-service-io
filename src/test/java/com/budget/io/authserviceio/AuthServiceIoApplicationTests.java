@@ -1,10 +1,10 @@
-package com.budget.authservice;
+package com.budget.io.authserviceio;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class LoginApplicationTests {
+class AuthServiceIoApplicationTests {
 
     @Test
     void contextLoads() {
