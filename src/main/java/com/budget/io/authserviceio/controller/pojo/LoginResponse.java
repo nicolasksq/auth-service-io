@@ -8,6 +8,6 @@ import lombok.Value;
 @Builder
 @AllArgsConstructor
 public class LoginResponse {
-    int uid;
+    long uid;
     String session;
 }

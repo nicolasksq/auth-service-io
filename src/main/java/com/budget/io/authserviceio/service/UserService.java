@@ -5,6 +5,8 @@ import com.budget.io.authserviceio.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 public class UserService implements IUserService{
 
@@ -23,7 +25,7 @@ public class UserService implements IUserService{
 
     @Override
     public User getByUsername(String username){
-        return userRepository.findByUsername(username);
+        return Optional.of(userRepository.findByUsername(username)).get();
     }
 
 }

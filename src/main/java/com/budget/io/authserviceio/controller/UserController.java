@@ -2,23 +2,26 @@ package com.budget.io.authserviceio.controller;
 
 import com.budget.io.authserviceio.controller.pojo.LoginRequest;
 import com.budget.io.authserviceio.controller.pojo.LoginResponse;
+import com.budget.io.authserviceio.model.SessionJedis;
 import com.budget.io.authserviceio.model.User;
-import com.budget.io.authserviceio.repository.UserRepository;
 import com.budget.io.authserviceio.rest.ILoginServiceIOClient;
 import com.budget.io.authserviceio.rest.pojo.TokenResponse;
+import com.budget.io.authserviceio.service.SessionService;
 import com.budget.io.authserviceio.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mysql.cj.Session;
+import feign.Param;
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.Session;
-import org.hibernate.engine.jdbc.spi.SqlExceptionHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.sql.SQLException;
+import javax.swing.text.html.Option;
 import java.util.Map;
+import java.util.Optional;
+import java.util.concurrent.atomic.AtomicReference;
 
 @RestController
 @Slf4j
@@ -30,48 +33,53 @@ public class UserController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private SessionService sessionService;
+
     @RequestMapping("/")
     public ResponseEntity index() {
         return ResponseEntity.ok("{FAIL}");
     }
 
-
-    //llaman al login, me fijo si el user esta en redis SI esta devuelvo el access_token
-    //llaman al login, me fijo si el user esta en redis si NO esta me fijo que este en la DB por username
-             //SI ESTA llamo al login de IO con grant_type password
-             //SI NO ESTA lo guardo y llamo al login de IO con grant_type password
-    //
     @RequestMapping(method = RequestMethod.POST, value = "/login",
             produces = MediaType.APPLICATION_JSON_VALUE ,
             consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity login(@RequestBody LoginRequest loginRequest) {
+    public ResponseEntity login(@RequestBody LoginRequest loginRequest, @RequestParam(required = false) String session) {
 
-         try{
+         try {
 
-             User userExist =
+             User user =
                      userService.getByUsername(loginRequest.getUsername());
 
-             if(userExist == null) {
-                 User user = new User();
+             if (user == null) {
+                 user = new User();
                  user.setUsername(loginRequest.getUsername());
                  userService.save(user);
-
-//                 create session
              }
 
-             ObjectMapper oMapper = new ObjectMapper();
-             TokenResponse tokenResponse =
-                     loginServiceIOClient.login(oMapper.convertValue(loginRequest, Map.class));
+             //check if exist in redis
+             Optional<SessionJedis> sessionJedis = sessionService.findBySession(session);
 
+             if (!sessionJedis.isPresent()) {
 
+                 ObjectMapper oMapper = new ObjectMapper();
+                 TokenResponse tokenResponse =
+                         loginServiceIOClient.login(oMapper.convertValue(loginRequest, Map.class));
 
-                if(tokenResponse.getExpiresIn() > 0) {
+                 sessionJedis = Optional.of(new SessionJedis(
+                         user.getId(),
+                         tokenResponse.getRefreshToken(),
+                         null
+                 ));
 
-                }
+                 sessionService.save(sessionJedis.get());
+             }
 
-            return ResponseEntity.ok(LoginResponse.builder());
+             LoginResponse response = new LoginResponse(sessionJedis.get().getUid(), sessionJedis.get().getSession());
 
-        }catch (Exception e) {
+             return ResponseEntity.ok(response);
+
+         }catch (Exception e) {
              return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e);
          }
 
