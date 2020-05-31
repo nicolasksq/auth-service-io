@@ -18,5 +18,5 @@ public class LoginRequest {
     private String password;
 
     @JsonProperty("grant_type")
-    private String grantType;
+    private String grantType = "password";
 }

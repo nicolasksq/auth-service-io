@@ -24,8 +24,8 @@ public class UserService implements IUserService{
     }
 
     @Override
-    public User getByUsername(String username){
-        return Optional.of(userRepository.findByUsername(username)).get();
+    public Optional<User> getByUsername(String username){
+        return userRepository.findByUsername(username);
     }
 
 }

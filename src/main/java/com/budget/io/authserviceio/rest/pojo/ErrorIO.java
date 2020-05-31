@@ -7,7 +7,7 @@ import lombok.Value;
 @Value
 @Builder
 @AllArgsConstructor
-public class ErrorIO {
+public class ErrorIO extends Exception{
     private int error;
     private String message;
 }

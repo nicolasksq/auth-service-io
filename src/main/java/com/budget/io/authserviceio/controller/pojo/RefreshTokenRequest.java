@@ -1,4 +1,4 @@
-package com.budget.io.authserviceio.rest.pojo;
+package com.budget.io.authserviceio.controller.pojo;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
@@ -11,14 +11,11 @@ import java.util.Map;
 @Value
 @Builder
 @AllArgsConstructor
-public class LoginRequest {
+public class RefreshTokenRequest {
 
-    @JsonProperty("username")
-    private String username;
-
-    @JsonProperty("password")
-    private String password;
+    @JsonProperty("refresh_token")
+    private String refreshToken;
 
     @JsonProperty("grant_type")
-    private final String grantType = "password";
+    private final String grantType = "refresh_token";
 }

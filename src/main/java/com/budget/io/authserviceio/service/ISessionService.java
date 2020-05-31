@@ -1,10 +1,8 @@
 package com.budget.io.authserviceio.service;
 
-import com.budget.io.authserviceio.model.SessionJedis;
-
-import java.util.Optional;
+import com.budget.io.authserviceio.model.Session;
 
 public interface ISessionService {
-    SessionJedis save(SessionJedis user);
-    SessionJedis findByUid(Long id);
+    Session save(Session user);
+    Session findByUid(Long id);
 }

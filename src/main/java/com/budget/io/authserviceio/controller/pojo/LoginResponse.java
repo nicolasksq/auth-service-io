@@ -10,4 +10,5 @@ import lombok.Value;
 public class LoginResponse {
     long uid;
     String session;
+    Boolean tokenUpdated;
 }

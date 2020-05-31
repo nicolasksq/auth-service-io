@@ -1,11 +1,13 @@
 package com.budget.io.authserviceio.service;
 
-import com.budget.io.authserviceio.model.SessionJedis;
+import com.budget.io.authserviceio.model.Session;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
+import javax.swing.text.html.Option;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
@@ -15,44 +17,34 @@ import java.util.concurrent.TimeUnit;
 @Service
 public class SessionService {
 
+    final String key = "session:%s";
+    private com.google.gson.Gson gson;
 
     @Autowired
-    private RedisTemplate< String, Object > template;
+    private RedisTemplate<String, Object> jedis;
 
-    public SessionJedis save(SessionJedis sessionJedis){
+    @Autowired
+    private StringRedisTemplate jedisStr;
 
-        final String key = String.format( "session:%s", sessionJedis.getSession() );
+    //TODO research how to save session without session
+    public Optional<Session> save(Session session) {
 
-        properties.put( "uid", sessionJedis.getUid() );
-        properties.put( "refreshToken", sessionJedis.getRefreshToken() );
+        String key = String.format(this.key, session.getSession());
 
-        template.expire( key, 3600, TimeUnit.SECONDS );
-        template.opsForSet().putAll( key, properties);
+        ValueOperations values = jedis.opsForValue();
+        values.set(key, session, 3600, TimeUnit.SECONDS);
 
-        return sessionJedis;
+        return Optional.of(session);
     }
 
-    public Optional<SessionJedis> findBySession(String session){
+    public Optional<Session> findBySession(String session) {
+        Optional<?> cacheSession = Optional.ofNullable(jedisStr.opsForValue().get(String.format(this.key, session)));
 
-        if(session != null) {
-
-            final String key = String.format("session:%s", session);
-
-            Boolean exist = template.hasKey(session);
-
-            if (exist) {
-                final long uid = (long) template.opsForHash().get(key, "uid");
-                final String refreshToken = (String) template.opsForHash().get(key, "refreshToken");
-
-                return Optional.of(new SessionJedis(uid, refreshToken, session));
-            }
+        if(cacheSession.isPresent()) {
+            return (Optional<Session>) cacheSession;
         }
 
         return Optional.empty();
     }
-
-
-
-
 
 }

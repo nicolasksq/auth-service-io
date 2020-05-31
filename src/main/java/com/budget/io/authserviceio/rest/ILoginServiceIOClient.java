@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.Map;
+import java.util.Optional;
 
 @FeignClient(name = "authservice-io", url = "https://api.invertironline.com", configuration = FeignConfig.class)
 public interface ILoginServiceIOClient {
@@ -16,5 +17,5 @@ public interface ILoginServiceIOClient {
             value = "/token",
             consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
     @Headers("Content-Type: " + MediaType.APPLICATION_FORM_URLENCODED_VALUE)
-    TokenResponse login(@RequestBody Map<String, ?> loginRequest);
+    Optional<TokenResponse> login(@RequestBody Map<String, ?> loginRequest);
 }
