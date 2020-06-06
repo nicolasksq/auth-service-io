@@ -5,7 +5,6 @@ import com.budget.io.authserviceio.controller.pojo.LoginResponse;
 import com.budget.io.authserviceio.controller.pojo.RefreshTokenRequest;
 import com.budget.io.authserviceio.model.Session;
 import com.budget.io.authserviceio.model.User;
-import com.budget.io.authserviceio.repository.UserRepository;
 import com.budget.io.authserviceio.rest.ILoginServiceIOClient;
 import com.budget.io.authserviceio.rest.pojo.ErrorIO;
 import com.budget.io.authserviceio.rest.pojo.TokenResponse;
@@ -14,13 +13,10 @@ import com.budget.io.authserviceio.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import sun.tools.jstat.Token;
 
-import java.io.IOError;
 import java.util.Map;
 import java.util.Optional;
 
