@@ -35,7 +35,7 @@ public class UserController {
 
     @RequestMapping("/")
     public ResponseEntity index() {
-        return ResponseEntity.ok("{FAIL}");
+        return ResponseEntity.ok("Hola Mundo / Hello World");
     }
 
     @RequestMapping(method = RequestMethod.POST, value = "/login",
